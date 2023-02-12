@@ -2,9 +2,6 @@ const service = require("./reservations.service")
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 const hasProperties = require("../errors/hasProperties")
 
-//  Validation Middleware
-
-// validate reservation existence
 async function reservationExists(req, res, next) {
   const { reservation_id } = req.params || req.body.data
   const foundReservation = await service.read(reservation_id)
@@ -17,8 +14,6 @@ async function reservationExists(req, res, next) {
     message: `reservation with an ID of ${reservation_id} could not be found.`
   })
 }
-
-// validate time format
 async function validateTime(req, res, next) {
   const { data = {} } = req.body;
   const time = data.reservation_time
@@ -39,7 +34,6 @@ async function validateTime(req, res, next) {
   next();
 }
 
-// validate date format
 async function validateDate(req, res, next) {
   const { data = {} } = req.body;
   const date = new Date(data.reservation_date)
@@ -71,8 +65,6 @@ async function validateDate(req, res, next) {
   next();
 }
 
-
-// validate people is integer
 function validatePeople(req, res, next) {
   const { data = {} } = req.body;
 
@@ -86,7 +78,7 @@ function validatePeople(req, res, next) {
   next();
 }
 
-// validate status is not seated
+
 function checkCurrentStatus(req, res, next) {
   const { status } = req.body.data;
 
@@ -100,11 +92,9 @@ function checkCurrentStatus(req, res, next) {
 
   next();
 }
-// validate form data submission 
 
-// valid status list
 const validStatus = ["booked", "finished", "seated", "cancelled"];
-// check if the status submission is a valid status or unknown
+
 function hasValidStatus(req, res, next) {
   const { status } = req.body.data;
 
@@ -117,7 +107,6 @@ function hasValidStatus(req, res, next) {
   next();
 }
 
-// properties to look for
 const hasValidProperties = hasProperties(
   "first_name",
   "last_name",
@@ -126,7 +115,7 @@ const hasValidProperties = hasProperties(
   "reservation_time",
   "people"
 );
-// fields for validation
+
 const validFields = [
   "first_name",
   "last_name",
@@ -139,7 +128,7 @@ const validFields = [
   "created_at",
   "updated_at",
 ];
-// check the valid fields
+
 function hasValidFields(req, res, next) {
   const { data = {} } = req.body;
 
@@ -157,9 +146,6 @@ function hasValidFields(req, res, next) {
   next();
 }
 
-// Route Handlers
-
-// list all reservations
 async function list(req, res) {
   const { date, mobile_number } = req.query
   const data = await (
@@ -170,18 +156,16 @@ async function list(req, res) {
   res.json({ data });
 }
 
-// create a new reservation
 async function create(req, res) {
   const data = await service.create(req.body.data)
   res.status(201).json({ data })
 }
 
-// read a specific reservation 
 function read(req, res) {
   res.json({ data: res.locals.reservation })
 }
 
-// update reservation that isn't finished
+
 async function update(req, res, next) {
   const updatedReservation = {
     ...req.body.data,

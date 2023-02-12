@@ -47,12 +47,10 @@ function Dashboard({ date }) {
     history.push(`/dashboard?date=${today}`);
   };
 
-  // create a list of all tables
   const tableList = tables.map((table) => (
     <Table loadDashboard={loadDashboard} key={table.table_id} table={table} />
   ));
 
-  // create a list of all reservations
   const reservationList = reservations.map((reservation) => (
     <Reservation
       loadDashboard={loadDashboard}
@@ -61,7 +59,6 @@ function Dashboard({ date }) {
     />
   ));
 
-  // return a header, with buttons, and two tables, one with our reservations, other with the tables
   return (
     <main>
       <h1>Dashboard</h1>

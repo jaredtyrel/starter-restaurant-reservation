@@ -4,9 +4,6 @@ const reservationsService = require("../reservations/reservations.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 const hasProperties = require("../errors/hasProperties");
 
-// validation middleware
-
-// validate existence of table by ID
 async function tableExists(req, res, next) {
   const { table_id } = req.params;
 
@@ -21,7 +18,6 @@ async function tableExists(req, res, next) {
   });
 }
 
-// validate existence of reservation by ID
 async function reservationIdExists(req, res, next) {
   const { reservation_id } = req.body.data;
   const foundReservation = await reservationsService.read(reservation_id);
@@ -36,7 +32,6 @@ async function reservationIdExists(req, res, next) {
   });
 }
 
-// validate name length is more than one character
 function validateNameLength(req, res, next) {
   const { data = {} } = req.body;
   if (!data.table_name || data.table_name.length < 2) {
@@ -48,7 +43,6 @@ function validateNameLength(req, res, next) {
   next();
 }
 
-// validate capacity exists and is a valid number
 function validateCapacityNumber(req, res, next) {
   const { data = {} } = req.body;
   if (!data.capacity || typeof data.capacity !== "number") {
@@ -60,7 +54,6 @@ function validateCapacityNumber(req, res, next) {
   next();
 }
 
-// validate table is occupied before finishing
 function validateOccupiedForFinish(req, res, next) {
   const { reservation_id } = res.locals.table;
   if (!reservation_id) {
@@ -73,7 +66,6 @@ function validateOccupiedForFinish(req, res, next) {
   next();
 }
 
-// validate that the table is not occupied before seating, also check if capacity > partysize
 async function validateTableOccupation(req, res, next) {
   const { table } = res.locals;
   const { reservation } = res.locals;
@@ -93,7 +85,6 @@ async function validateTableOccupation(req, res, next) {
   }
 }
 
-// validate the table is not seated to allow for new seating to table
 function validateTableNotSeated(req, res, next) {
   const { status } = res.locals.reservation;
   if (status === "seated") {
@@ -105,13 +96,9 @@ function validateTableNotSeated(req, res, next) {
   next();
 }
 
-// validate form data submission
-// properties to look for
 
 const hasValidProperties = hasProperties("table_name", "capacity");
 
-
-// Route  Handlers
 
 async function list(req, res) {
   res.json({ data: await service.list() });
